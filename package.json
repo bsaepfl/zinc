@@ -8,9 +8,12 @@
   "license": "MIT",
   "scripts": {
     "start": "node index.js",
+    "prod": "NODE_ENV=production npm run start",
     "lint": "standard"
   },
   "dependencies": {
+    "@dedis/cothority": "^1.1.17",
+    "axios": "^0.18.0",
     "express": "^4.16.4"
   },
   "devDependencies": {

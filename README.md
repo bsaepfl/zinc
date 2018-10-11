@@ -1,2 +1,2 @@
 # tinac
-This Is Not A Conode
+Tinac Is Not A Conode

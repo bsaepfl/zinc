@@ -1,8 +1,13 @@
 const express = require('express')
+const cors = require('cors')
 const axios = require('axios')
 const identity = require('@dedis/cothority')
+
 const { net } = identity
+
 const app = express()
+app.use(cors())
+
 const port = 6842
 
 const URL = process.env.NODE_ENV === 'production' ? 'https://zinc.louismerl.in' : `http://localhost:${port}`

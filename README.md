@@ -1,5 +1,5 @@
 # zinc
-Zinc Is Not a Conode
+**z**inc **i**s **n**ot a **c**onode
 
 This is a simple proxy around the cothority conodes, useful until they support wss:// connection.
 

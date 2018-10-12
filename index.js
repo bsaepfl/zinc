@@ -14,11 +14,11 @@ const port = 6842
 const URL = process.env.NODE_ENV === 'production' ? 'https://zinc.louismerl.in' : `http://localhost:${port}`
 const DEFAULT_COTHORITY = 'dedis'
 const DEDIS = 'https://raw.githubusercontent.com/dedis/cothority/master/dedis-cothority.toml'
-const BSA = '../conode_data/public.toml'
+const BSA = '../go/src/github.com/dedis/cothority/conode/public.toml'
 
 const skipchains = {
   dedis: ['d669adf6bf6fd59f0f412bf1d9baee95c194baca6ba70d8056'],
-  bsa: ['418e34fe63be04b376c039983573c817bff2b590f2f99b1e7b43bcd263f40c99']
+  bsa: ['94ac819a55c9f1b5fa332b61d895c134dc885c2ef9b3a0e14374dcae7129a68f']
 }
 
 let sockets = {

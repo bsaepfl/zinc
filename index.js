@@ -47,8 +47,12 @@ app.get('/skipchain', async (req, res) => {
   const socket = getSocket(req.query.cothority)
   socket.service = 'Skipchain'
 //  const skipchain = await socket.send('skipchain.GetAllSkipChainIDs', 'GetAllSkipChainIDsReply', {})
-  const skipchain = await socket.send('skipchain.GetUpdateChain', 'GetUpdateChainReply', { latestID: misc.hexToUint8Array(skipchains[bsa][0]) })
-  return res.send(skipchain)
+  try {
+    const skipchain = await socket.send('skipchain.GetUpdateChain', 'GetUpdateChainReply', { latestID: misc.hexToUint8Array(skipchains.[req.query.cothority || DEFAULT_COTHORITY][0]) })
+    return res.send(skipchain)
+  } catch err {
+    return res.send(err)
+  }
 })
 
 app.get('/skipchains', (req, res) => res.send(skipchains))
@@ -58,7 +62,7 @@ const start = async () => {
   sockets.dedis = new net.RosterSocket(identity.Roster.fromTOML(await res.data), 'Status')
   fs.readFile(BSA, (err, data) => {
     if (err) return
-    sockets.bsa = new net.RosterSocket(identity.Roster.fromTOML(data), 'Status')
+    sockets.bsa = new net.RosterSocket(identity.Roster.fromTOML(data.toString()), 'Status')
   })
   app.listen(port, () => console.log(`zinc listening on port ${port}!`))
 }

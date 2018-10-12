@@ -46,11 +46,11 @@ app.get('/status', async (req, res) => {
 app.get('/skipchain', async (req, res) => {
   const socket = getSocket(req.query.cothority)
   socket.service = 'Skipchain'
-//  const skipchain = await socket.send('skipchain.GetAllSkipChainIDs', 'GetAllSkipChainIDsReply', {})
+  // const skipchain = await socket.send('skipchain.GetAllSkipChainIDs', 'GetAllSkipChainIDsReply', {})
   try {
-    const skipchain = await socket.send('skipchain.GetUpdateChain', 'GetUpdateChainReply', { latestID: misc.hexToUint8Array(skipchains.[req.query.cothority || DEFAULT_COTHORITY][0]) })
+    const skipchain = await socket.send('skipchain.GetUpdateChain', 'GetUpdateChainReply', { latestID: misc.hexToUint8Array(skipchains[req.query.cothority || DEFAULT_COTHORITY][0]) })
     return res.send(skipchain)
-  } catch err {
+  } catch (err) {
     return res.send(err)
   }
 })

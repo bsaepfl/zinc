@@ -17,7 +17,7 @@ const DEDIS = 'https://raw.githubusercontent.com/dedis/cothority/master/dedis-co
 const BSA = '../go/src/github.com/dedis/cothority/conode/public.toml'
 
 const skipchains = {
-  dedis: ['d669adf6bf6fd59f0f412bf1d9baee95c194baca6ba70d8056'],
+  dedis: ['d669adf6bf6fd59f0f412bf1d9baee95c194baca6ba70d8056f8370380bc99da'],
   bsa: ['94ac819a55c9f1b5fa332b61d895c134dc885c2ef9b3a0e14374dcae7129a68f']
 }
 

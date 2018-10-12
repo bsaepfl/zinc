@@ -11,7 +11,7 @@ app.use(cors())
 
 const port = 6842
 
-const URL = process.env.NODE_ENV === 'production' ? 'https://zinc.louismerl.in' : `http://localhost:${port}`
+const URL = process.env.NODE_ENV === 'production' ? 'https://zinc.cool' : `http://localhost:${port}`
 const DEFAULT_COTHORITY = 'dedis'
 const DEDIS = 'https://raw.githubusercontent.com/dedis/cothority/master/dedis-cothority.toml'
 const BSA = '../go/src/github.com/dedis/cothority/conode/public.toml'
@@ -30,11 +30,14 @@ const getSocket = cothority => sockets[cothority] || sockets[DEFAULT_COTHORITY]
 
 app.get('/', async (req, res) => {
   return res.send({
+    cothorities: `${URL}/cothorities`,
     status: `${URL}/status`,
     skipchain: `${URL}/skipchain`,
     skipchains: `${URL}/skipchains`
   })
 })
+
+app.get('/cothorities', (req, res) => res.send(Object.keys(sockets)))
 
 app.get('/status', async (req, res) => {
   const socket = getSocket(req.query.cothority)
@@ -55,7 +58,9 @@ app.get('/skipchain', async (req, res) => {
   }
 })
 
-app.get('/skipchains', (req, res) => res.send(skipchains))
+app.get('/skipchains', (req, res) =>
+  res.send(skipchains[req.query.cothority] || skipchains[DEFAULT_COTHORITY])
+)
 
 const start = async () => {
   const res = await axios.get(DEDIS)

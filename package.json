@@ -9,7 +9,8 @@
   "scripts": {
     "start": "node index.js",
     "prod": "NODE_ENV=production yarn start",
-    "lint": "standard"
+    "lint": "standard",
+    "test": "yarn lint"
   },
   "dependencies": {
     "@dedis/cothority": "^1.1.17",

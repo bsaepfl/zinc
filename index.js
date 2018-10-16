@@ -2,9 +2,9 @@ const fs = require('fs')
 const express = require('express')
 const cors = require('cors')
 const axios = require('axios')
-const identity = require('@dedis/cothority')
+const identity = require('@louismerlin/cothority')
 
-const { net, misc } = identity
+const { net } = identity
 
 const app = express()
 app.use(cors())
@@ -16,11 +16,6 @@ const DEFAULT_COTHORITY = 'dedis'
 const DEDIS = 'https://raw.githubusercontent.com/dedis/cothority/master/dedis-cothority.toml'
 const BSA = '../go/src/github.com/dedis/cothority/conode/public.toml'
 
-const skipchains = {
-  dedis: ['d669adf6bf6fd59f0f412bf1d9baee95c194baca6ba70d8056f8370380bc99da'],
-  bsa: ['94ac819a55c9f1b5fa332b61d895c134dc885c2ef9b3a0e14374dcae7129a68f']
-}
-
 let sockets = {
   dedis: {},
   bsa: {}
@@ -30,10 +25,22 @@ const getSocket = cothority => sockets[cothority] || sockets[DEFAULT_COTHORITY]
 
 app.get('/', async (req, res) => {
   return res.send({
-    cothorities: `${URL}/cothorities`,
-    status: `${URL}/status`,
-    skipchain: `${URL}/skipchain`,
-    skipchains: `${URL}/skipchains`
+    cothorities: {
+      description: 'list of zinc\'s cothorities',
+      url: `${URL}/cothorities`
+    },
+    status: {
+      description: 'status of the conode zinc is connected to',
+      url: `${URL}/status`
+    },
+    skipchains: {
+      description: 'all of the cothoritie\'s skipchains',
+      url: `${URL}/skipchains`
+    },
+    skipchain: {
+      description: 'traversal view of skipchain with index',
+      url: `${URL}/skipchain/:index`
+    }
   })
 })
 
@@ -46,21 +53,27 @@ app.get('/status', async (req, res) => {
   return res.send(status)
 })
 
-app.get('/skipchain', async (req, res) => {
+app.get('/skipchain/:index', async (req, res) => {
   const socket = getSocket(req.query.cothority)
+  const index = Number(req.params.index)
   socket.service = 'Skipchain'
-  // const skipchain = await socket.send('skipchain.GetAllSkipChainIDs', 'GetAllSkipChainIDsReply', {})
   try {
-    const skipchain = await socket.send('skipchain.GetUpdateChain', 'GetUpdateChainReply', { latestID: misc.hexToUint8Array(skipchains[req.query.cothority || DEFAULT_COTHORITY][0]) })
-    return res.send(skipchain)
+    const { skipChainIDs } = await socket.send('skipchain.GetAllSkipChainIDs', 'GetAllSkipChainIDsReply', {})
+    const latestID = skipChainIDs[index]
+    if (!latestID) throw new Error(`Could not get skipchain with index ${index}`)
+    const { update } = await socket.send('skipchain.GetUpdateChain', 'GetUpdateChainReply', { latestID })
+    return res.send(update)
   } catch (err) {
     return res.send(err)
   }
 })
 
-app.get('/skipchains', (req, res) =>
-  res.send(skipchains[req.query.cothority] || skipchains[DEFAULT_COTHORITY])
-)
+app.get('/skipchains', async (req, res) => {
+  const socket = getSocket(req.query.cothority)
+  socket.service = 'Skipchain'
+  const { skipChainIDs } = await socket.send('skipchain.GetAllSkipChainIDs', 'GetAllSkipChainIDsReply', {})
+  return res.send(skipChainIDs)
+})
 
 const start = async () => {
   const res = await axios.get(DEDIS)

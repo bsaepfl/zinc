@@ -1,11 +1,12 @@
 {
-  "name": "zinc",
-  "version": "1.0.0",
+  "name": "@louismerlin/zinc",
+  "version": "1.0.1",
   "description": "Zinc Is Not a Conode",
   "main": "index.js",
   "repository": "https://github.com/bsaepfl/zinc/",
   "author": "Louis Merlin <louis.merlin@epfl.ch>",
   "license": "MIT",
+  "bin": "./index.js",
   "scripts": {
     "start": "node index.js",
     "prod": "NODE_ENV=production yarn start",

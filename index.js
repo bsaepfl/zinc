@@ -15,7 +15,7 @@ const port = 6842
 const URL = process.env.NODE_ENV === 'production' ? 'https://zinc.cool' : `http://localhost:${port}`
 const DEFAULT_COTHORITY = 'dedis'
 const DEDIS = 'https://raw.githubusercontent.com/dedis/cothority/master/dedis-cothority.toml'
-const BSA = '~/go/src/github.com/dedis/cothority/conode/public.toml'
+const BSA = '/root/go/src/github.com/dedis/cothority/conode/public.toml'
 
 let sockets = {
   dedis: {},

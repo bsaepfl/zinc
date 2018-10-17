@@ -13,7 +13,7 @@
     "lint": "standard"
   },
   "dependencies": {
-    "@louismerlin/cothority": "^1.1.26",
+    "@louismerlin/cothority": "^1.1.27",
     "axios": "^0.18.0",
     "cors": "^2.8.4",
     "express": "^4.16.4"

@@ -11,10 +11,10 @@
     elliptic "^6.4.0"
     hash.js "^1.1.3"
 
-"@louismerlin/cothority@^1.1.26":
-  version "1.1.26"
-  resolved "https://registry.yarnpkg.com/@louismerlin/cothority/-/cothority-1.1.26.tgz#0abb78a79f987f768b0c2a72a67badbcb2b7024f"
-  integrity sha512-IyWAw925K4QuHqQSqiD/2F7dRtNNlB9Ajc/eYW1IQWJC2CND7CAb+0Ojphs0XQ0ahTU/nx8J6nZXcXWh5LnuWg==
+"@louismerlin/cothority@^1.1.27":
+  version "1.1.27"
+  resolved "https://registry.yarnpkg.com/@louismerlin/cothority/-/cothority-1.1.27.tgz#ff65625e699bd5a51295a013be6a9a4dab967fa2"
+  integrity sha512-rS0Qmbro2J+NmG9uqp2oMN214wnyUoJM4lSVapy+LzRN2/VlITvT8rs6XKegI4jchdQMoRAss5E2sA8bXsUB0Q==
   dependencies:
     "@dedis/kyber-js" "^0.0.10"
     co "^4.6.0"

@@ -62,8 +62,27 @@ app.get('/skipchain/:index', async (req, res) => {
     const { skipChainIDs } = await socket.send('skipchain.GetAllSkipChainIDs', 'GetAllSkipChainIDsReply', {})
     const latestID = skipChainIDs[index]
     if (!latestID) throw new Error(`Could not get skipchain with index ${index}`)
-    const { update } = await socket.send('skipchain.GetUpdateChain', 'GetUpdateChainReply', { latestID })
-    return res.send(update)
+    const chain = []
+    const getNextBlockRecur = async (index) => {
+      try {
+        console.log('genesis ' + latestID)
+        console.log('index ' + index)
+        const SkipBlock = await socket.send('skipchain.GetSingleBlockByIndex', 'SkipBlock', { genesis: latestID, index: index })
+        console.log(SkipBlock && SkipBlock.index)
+        if (SkipBlock) {
+          chain[index] = SkipBlock
+          return getNextBlockRecur(index + 1)
+        } else {
+          return
+        }
+      } catch (e) {
+        return
+      }
+    }
+    await getNextBlockRecur(0);
+    return res.send(chain)
+    //const { update } = await socket.send('skipchain.GetUpdateChain', 'GetUpdateChainReply', { latestID })
+    //return res.send(update)
   } catch (err) {
     return res.send(err)
   }

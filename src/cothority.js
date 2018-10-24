@@ -91,7 +91,6 @@ router.get('/', async (req, res) => {
   })
 })
 
-
 router.get('/status', async (req, res) => {
   const socket = req.cothority.socket
   socket.service = 'Status'

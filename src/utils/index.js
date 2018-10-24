@@ -16,7 +16,7 @@ const URL = process.env.NODE_ENV === 'production' ? 'https://zinc.cool' : `http:
 const cothorities = {}
 
 const initCothorities = async () => {
-  COTHORITIES.forEach(c => cothorities[c] = {})
+  COTHORITIES.forEach(c => { cothorities[c] = {} })
   const res = await axios.get(DEDIS)
   cothorities.dedis.socket = new net.RosterSocket(identity.Roster.fromTOML(await res.data), 'Status')
   cothorities.dedis.addresses = JSON.parse(JSON.stringify(cothorities.dedis.socket.addresses))
@@ -28,7 +28,7 @@ const initCothorities = async () => {
     cothorities.bsa.skipchains = {}
   })
 }
-  
+
 const getCothority = cothority => {
   if (!cothority) return cothorities[DEFAULT_COTHORITY]
   else if (cothorities[cothority]) return cothorities[cothority]
@@ -37,7 +37,7 @@ const getCothority = cothority => {
 
 let dataTimeout = {}
 const dataTimedOut = value => dataTimeout[value] === undefined || Date.now() > dataTimeout[value]
-const resetTimeout = value => dataTimeout[value] = Date.now() + TIMEOUT_LIMIT
+const resetTimeout = value => { dataTimeout[value] = Date.now() + TIMEOUT_LIMIT }
 
 module.exports = {
   initCothorities,

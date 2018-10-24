@@ -6,10 +6,10 @@
   "repository": "https://github.com/bsaepfl/zinc/",
   "author": "Louis Merlin <louis.merlin@epfl.ch>",
   "license": "MIT",
-  "bin": "./index.js",
+  "bin": "./src/index.js",
   "scripts": {
-    "start": "node index.js",
-    "prod": "NODE_ENV=production yarn start",
+    "start": "nodemon src/index.js",
+    "prod": "NODE_ENV=production node src/index.js",
     "lint": "standard"
   },
   "dependencies": {
@@ -19,6 +19,7 @@
     "express": "^4.16.4"
   },
   "devDependencies": {
+    "nodemon": "^1.18.4",
     "standard": "^12.0.1"
   }
 }

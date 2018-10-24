@@ -1,50 +1,9 @@
-#!/usr/bin/env node
-const fs = require('fs')
 const express = require('express')
-const cors = require('cors')
-const axios = require('axios')
-const identity = require('@louismerlin/cothority')
+const { misc } = require('@louismerlin/cothority')
 
-const { net, misc } = identity
+const { getCothority, dataTimedOut, resetTimeout, URL } = require('./utils')
 
-const app = express()
-app.use(cors())
-
-const port = 6842
-
-const URL = process.env.NODE_ENV === 'production' ? 'https://zinc.cool' : `http://localhost:${port}`
-const DEFAULT_COTHORITY = 'dedis'
-const DEDIS = 'https://raw.githubusercontent.com/dedis/cothority/master/dedis-cothority.toml'
-const BSA = '/root/go/src/github.com/dedis/cothority/conode/public.toml'
-const TIMEOUT_LIMIT = 10000
-
-const cothorities = {
-  dedis: {
-    socket: {},
-    skipchains: {},
-    addresses: []
-  },
-  bsa: {
-    socket: {},
-    skipchains: {},
-    addresses: []
-  }
-}
-
-let dataTimeout = {}
-const dataTimedOut = value => dataTimeout[value] === undefined || Date.now() > dataTimeout[value]
-
-const getSocket = cothority => {
-  if (!cothority) return cothorities[DEFAULT_COTHORITY].socket
-  else if (cothorities[cothority]) return cothorities[cothority].socket
-  else throw new Error(`Could not find cothority ${cothority}`)
-}
-
-const getCothority = cothority => {
-  if (!cothority) return cothorities[DEFAULT_COTHORITY]
-  else if (cothorities[cothority]) return cothorities[cothority]
-  else throw new Error(`Could not find cothority ${cothority}`)
-}
+const router = express.Router()
 
 const sendAllConodes = async (socket, addresses, request, response, data) => {
   const allResponses = []
@@ -69,7 +28,7 @@ const getLatestSkipchains = async (cothority) => {
         skipchains[hex] = []
       }
     }))
-    dataTimeout.skipchains = Date.now() + TIMEOUT_LIMIT
+    resetTimeout(skipchains)
   }
   return Object.keys(skipchains)
 }
@@ -109,42 +68,38 @@ const getLatestSkipchain = async (cothority, hash) => {
 
     skipchains[hash] = update
 
-    dataTimeout[hash] = Date.now() + TIMEOUT_LIMIT
+    resetTimeout(hash)
   }
   return skipchains[hash]
 }
 
-app.get('/', async (req, res) => {
+router.get('/', async (req, res) => {
+  console.log(req.baseUrl)
   return res.send({
-    cothorities: {
-      description: 'list of zinc\'s cothorities',
-      url: `${URL}/cothorities`
-    },
     status: {
       description: 'status of the conode zinc is connected to',
-      url: `${URL}/status`
+      url: `${URL}${req.baseUrl}/status`
     },
     skipchains: {
       description: 'all of the cothoritie\'s skipchains',
-      url: `${URL}/skipchains`
+      url: `${URL}${req.baseUrl}/skipchains`
     },
     skipchain: {
       description: 'traversal view of skipchain with hash',
-      url: `${URL}/skipchain/:hash`
+      url: `${URL}${req.baseUrl}/skipchain/:hash`
     }
   })
 })
 
-app.get('/cothorities', (req, res) => res.send(Object.keys(cothorities)))
 
-app.get('/status', async (req, res) => {
-  const socket = getSocket(req.query.cothority)
+router.get('/status', async (req, res) => {
+  const socket = req.cothority.socket
   socket.service = 'Status'
   const status = await socket.send('status.Request', 'Response', {})
   return res.send(status)
 })
 
-app.get('/skipchain/:hash', async (req, res) => {
+router.get('/skipchain/:hash', async (req, res) => {
   try {
     const skipchain = await getLatestSkipchain(req.query.cothority, req.params.hash)
     return res.send(skipchain)
@@ -153,21 +108,9 @@ app.get('/skipchain/:hash', async (req, res) => {
   }
 })
 
-app.get('/skipchains', async (req, res) => {
+router.get('/skipchains', async (req, res) => {
   const skipchains = await getLatestSkipchains(req.query.cothority)
   return res.send(skipchains)
 })
 
-const start = async () => {
-  const res = await axios.get(DEDIS)
-  cothorities.dedis.socket = new net.RosterSocket(identity.Roster.fromTOML(await res.data), 'Status')
-  cothorities.dedis.addresses = JSON.parse(JSON.stringify(cothorities.dedis.socket.addresses))
-  fs.readFile(BSA, (err, data) => {
-    if (err) return
-    cothorities.bsa.socket = new net.RosterSocket(identity.Roster.fromTOML(data.toString()), 'Status')
-    cothorities.bsa.addresses = JSON.parse(JSON.stringify(cothorities.bsa.socket.addresses))
-  })
-  app.listen(port, () => console.log(`zinc listening on port ${port}!`))
-}
-
-start()
+module.exports = router

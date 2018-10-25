@@ -2,7 +2,7 @@ const fs = require('fs')
 const axios = require('axios')
 const identity = require('@louismerlin/cothority')
 
-const { net } = identity
+const { net, misc } = identity
 
 const PORT = 6842
 const DEFAULT_COTHORITY = 'dedis'
@@ -39,6 +39,40 @@ let dataTimeout = {}
 const dataTimedOut = value => dataTimeout[value] === undefined || Date.now() > dataTimeout[value]
 const resetTimeout = value => { dataTimeout[value] = Date.now() + TIMEOUT_LIMIT }
 
+const coolSend = (res, obj) => {
+  res.setHeader('Content-Type', 'application/json')
+  res.send(JSON.stringify(obj, null, 2))
+}
+
+const uth = misc.uint8ArrayToHex
+
+const formatSkipblock = block => ({
+  ...block,
+  hash: uth(block.hash),
+  backlinks: block.backlinks.map(uth),
+  verifiers: block.verifiers.map(uth),
+  data: uth(block.data),
+  payload: uth(block.payload),
+  genesis: uth(block.genesis),
+  roster: {
+    id: uth(block.roster.id),
+    list: block.roster.list.map(e => ({
+      ...e,
+      public: uth(e.public),
+      id: uth(e.id)
+    })),
+    aggregate: uth(block.roster.aggregate)
+  },
+  forward: block.forward.map(f => ({
+    from: uth(f.from),
+    to: uth(f.to),
+    signature: {
+      msg: uth(f.signature.msg),
+      sig: uth(f.signature.sig)
+    }
+  }))
+})
+
 module.exports = {
   initCothorities,
   getCothority,
@@ -46,5 +80,7 @@ module.exports = {
   PORT,
   COTHORITIES,
   dataTimedOut,
-  resetTimeout
+  resetTimeout,
+  coolSend,
+  formatSkipblock
 }

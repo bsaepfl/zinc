@@ -4,13 +4,13 @@ const cors = require('cors')
 
 const cothority = require('./cothority')
 
-const { initCothorities, URL, PORT, COTHORITIES, getCothority } = require('./utils')
+const { initCothorities, URL, PORT, COTHORITIES, getCothority, coolSend } = require('./utils')
 
 const app = express()
 app.use(cors())
 
 app.get('/', async (req, res) => {
-  return res.send({
+  return coolSend(res, {
     cothorities: {
       description: 'list of zinc\'s cothorities',
       url: `${URL}/cothorities`
@@ -22,7 +22,7 @@ app.get('/', async (req, res) => {
   })
 })
 
-app.get('/cothorities', (req, res) => res.send(COTHORITIES))
+app.get('/cothorities', (req, res) => coolSend(res, COTHORITIES))
 
 app.use('/:cothority', async (req, res, next) => {
   req.cothority = getCothority(req.params.cothority)
